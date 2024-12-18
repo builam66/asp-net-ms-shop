@@ -2,15 +2,15 @@
 {
     public class ShoppingCart
     {
-        public string UserName { get; set; } = default!;
+        public string Username { get; set; } = default!;
 
-        public IEnumerable<ShoppingCartItem> Items { get; set; } = default!;
+        public List<ShoppingCartItem> Items { get; set; } = [];
 
         public decimal TotalPrice => Items.Sum(x => x.Price * x.Quantity);
 
-        public ShoppingCart(string userName)
+        public ShoppingCart(string username)
         {
-            UserName = userName;
+            Username = username;
         }
 
         public ShoppingCart() { }
