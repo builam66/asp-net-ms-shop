@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Ordering.Domain.Models;
+﻿using Ordering.Domain.Models;
 using System.Reflection;
 
 namespace Ordering.Infrastructure.Data
 {
     public class ApplicationDbContext : DbContext
     {
+        // Add-Migration InitialMigration -OutputDir Data/Migrations -Project Ordering.Infrastructure -StartupProject Ordering.API
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {   
