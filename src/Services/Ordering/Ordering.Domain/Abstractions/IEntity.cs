@@ -15,6 +15,9 @@
 
         public string? UpdatedBy { get; set; }
 
-        public bool IsDeleted { get; set; } // For soft delete only
+        // <summary>
+        // For soft delete
+        // </summary>
+        public bool IsDeleted { get; set; }
     }
 }
