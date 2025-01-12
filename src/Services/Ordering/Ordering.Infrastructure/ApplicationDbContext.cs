@@ -1,14 +1,13 @@
-﻿using Ordering.Domain.Models;
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace Ordering.Infrastructure.Data
+namespace Ordering.Infrastructure
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext, IUnitOfWork
     {
-        // Add-Migration InitialMigration -OutputDir Data/Migrations -Project Ordering.Infrastructure -StartupProject Ordering.API
+        // Add-Migration InitialMigration -OutputDir Migrations -Project Ordering.Infrastructure -StartupProject Ordering.API
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
-        {   
+        {
         }
 
         public DbSet<Customer> Customers => Set<Customer>();
@@ -18,6 +17,13 @@ namespace Ordering.Infrastructure.Data
         public DbSet<Order> Orders => Set<Order>();
 
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
+        public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+        {
+            await base.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

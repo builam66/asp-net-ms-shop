@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Ordering.Domain.Models;
-using Ordering.Domain.ValueObjects;
-
-namespace Ordering.Infrastructure.Configurations
+﻿namespace Ordering.Infrastructure.Configurations
 {
     public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
