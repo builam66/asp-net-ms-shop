@@ -20,6 +20,8 @@ namespace Ordering.Infrastructure
 
         public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
         {
+            // Dispatch domain events before saveChanges
+
             await base.SaveChangesAsync(cancellationToken);
 
             return true;

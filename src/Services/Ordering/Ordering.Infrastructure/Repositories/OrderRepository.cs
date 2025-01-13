@@ -12,14 +12,23 @@
             return _dbContext.Orders.Add(order).Entity;
         }
 
-        public async Task<Order> GetAsync(Guid orderId)
+        public async Task<Order> GetAsync(Guid orderId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var stronglyOrderId = OrderId.Of(orderId);
+            var order = await _dbContext.Orders.FindAsync([stronglyOrderId], cancellationToken);
+
+            if (order != null)
+            {
+                await _dbContext.Entry(order)
+                    .Collection(i => i.OrderItems).LoadAsync(cancellationToken);
+            }
+
+            return order!;
         }
 
         public void Update(Order order)
         {
-            throw new NotImplementedException();
+            _dbContext.Entry(order).State = EntityState.Modified;
         }
     }
 }

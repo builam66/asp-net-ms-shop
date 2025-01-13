@@ -6,6 +6,6 @@
 
         void Update(Order order);
 
-        Task<Order> GetAsync(Guid orderId);
+        Task<Order> GetAsync(Guid orderId, CancellationToken cancellationToken);
     }
 }

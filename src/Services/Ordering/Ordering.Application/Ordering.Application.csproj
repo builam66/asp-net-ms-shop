@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
     <Folder Include="Order\EventHandlers\" />
     <Folder Include="Order\Queries\" />
   </ItemGroup>
