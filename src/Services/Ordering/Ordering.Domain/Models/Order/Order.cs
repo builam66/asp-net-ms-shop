@@ -77,5 +77,19 @@
                 _orderItems.Remove(orderItem);
             }
         }
+
+        public void SetCancelledStatus()
+        {
+            if (Status == OrderStatus.Cancelled ||
+                Status == OrderStatus.Completed ||
+                Status == OrderStatus.Draft)
+            {
+                return;
+                // TODO: StatusChangeException(OrderStatus.Cancelled);
+            }
+
+            Status = OrderStatus.Cancelled;
+            // TODO: AddDomainEvent(new OrderCancelledDomainEvent(this));
+        }
     }
 }
