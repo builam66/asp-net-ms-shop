@@ -1,8 +1,9 @@
-﻿using System.Reflection;
+﻿using Ordering.Application.Abstractions;
+using System.Reflection;
 
 namespace Ordering.Infrastructure
 {
-    public class ApplicationDbContext : DbContext, IUnitOfWork
+    public class ApplicationDbContext : DbContext, IUnitOfWork, IApplicationDbContext
     {
         // Add-Migration InitialMigration -OutputDir Migrations -Project Ordering.Infrastructure -StartupProject Ordering.API
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

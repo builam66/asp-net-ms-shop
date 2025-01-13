@@ -20,7 +20,8 @@
             if (order != null)
             {
                 await _dbContext.Entry(order)
-                    .Collection(i => i.OrderItems).LoadAsync(cancellationToken);
+                    .Collection(i => i.OrderItems)
+                    .LoadAsync(cancellationToken);
             }
 
             return order!;
