@@ -33,7 +33,7 @@
                         command.Order.Payment.CardName,
                         command.Order.Payment.CardNumber,
                         command.Order.Payment.Expiration,
-                        command.Order.Payment.CVV,
+                        command.Order.Payment.Cvv,
                         command.Order.Payment.PaymentMethod)
                     );
 
