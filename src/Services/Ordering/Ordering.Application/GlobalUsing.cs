@@ -4,6 +4,7 @@ global using FluentValidation;
 global using MediatR;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Logging;
+global using Microsoft.FeatureManagement;
 global using Ordering.Application.DTOs;
 global using Ordering.Application.Abstractions;
 global using Ordering.Application.Exceptions;

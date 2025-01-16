@@ -18,7 +18,10 @@ namespace Ordering.Application
                 config.AddOpenBehavior(typeof(LoggingBehavior<,>));
             });
 
-            // Consumer
+            // Adjust feature flag without redeploying
+            services.AddFeatureManagement();
+
+            // Publisher and Consumer
             services.AddMessageBroker(configuration, Assembly.GetExecutingAssembly());
 
             return services;

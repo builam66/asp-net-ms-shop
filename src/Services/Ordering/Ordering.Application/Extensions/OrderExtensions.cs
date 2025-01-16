@@ -1,10 +1,17 @@
-﻿namespace Ordering.Application.Extensions
+﻿using OrderAggregate = Ordering.Domain.Models.Order.Order;
+
+namespace Ordering.Application.Extensions
 {
     public static class OrderExtensions
     {
-        public static IEnumerable<OrderDto> ToOrderDtoList(this IEnumerable<Domain.Models.Order.Order> orders)
+        public static IEnumerable<OrderDto> ToOrderDtoList(this IEnumerable<OrderAggregate> orders)
         {
-            return orders.Select(order => new OrderDto(
+            return orders.Select(order => order.ToOrderDto());
+        }
+
+        public static OrderDto ToOrderDto(this OrderAggregate order)
+        {
+            return new OrderDto(
                 Id: order.Id.Value,
                 CustomerId: order.CustomerId.Value,
                 OrderName: order.OrderName,
@@ -31,14 +38,14 @@
                     order.Payment.CVV,
                     order.Payment.PaymentMethod),
                 Status: order.Status,
-                OrderItems: order.OrderItems.Select(oi => 
-                    new OrderItemDto(
-                        oi.OrderId.Value,
-                        oi.ProductId.Value,
-                        oi.Quantity,
-                        oi.Price))
-                    .ToList()
-            ));
+                OrderItems: order.OrderItems
+                    .Select(oi =>
+                        new OrderItemDto(
+                            oi.OrderId.Value,
+                            oi.ProductId.Value,
+                            oi.Quantity,
+                            oi.Price))
+                    .ToList());
         }
     }
 }
