@@ -1,0 +1,41 @@
+# DEPLOY DOCKER TO AZURE CONTAINER REGISTRY
+name: Deploy to Azure ACR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy: 
+    name: "Run docker build and deploy to ACR"
+    runs-on: ubuntu-latest 
+    environment: production
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # check out code
+    - name: "Checkout repository"
+      uses: actions/checkout@v4
+
+    # login to azure service
+    - name: "Azure login"
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.LOGIN_SERVER}}
+        username: ${{ secrets.USERNAME}}
+        password: ${{ secrets.PASSWORD }}
+
+    # build and push docker image
+    - name: "Build and push docker image"
+      run: |
+        docker-compose -f docker-compose.yml build
+        docker-compose -f docker-compose.yml push
+
+    # verify images in acr 
+    - name: Verify images in ACR
+      run: |
+        az acr repository list --name ${{ secrets.USERNAME }}
