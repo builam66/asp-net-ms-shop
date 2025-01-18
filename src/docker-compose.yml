@@ -46,6 +46,12 @@ services:
       context: .
       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
 
+  eshop.web:
+    image: ${DOCKER_REGISTRY-}eshopweb
+    build:
+      context: .
+      dockerfile: WebApp/EShop.Web/Dockerfile
+
 volumes:
   postgres_catalog:
   postgres_basket:

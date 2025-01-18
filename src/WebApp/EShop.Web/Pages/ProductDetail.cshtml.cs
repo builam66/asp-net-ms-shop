@@ -1,17 +1,22 @@
 namespace EShop.Web.Pages
 {
-    public class IndexModel
-        (ICatalogService _catalogService, IBasketService _basketService, ILogger<IndexModel> _logger)
+    public class ProductDetailModel
+        (ICatalogService _catalogService, IBasketService _basketService, ILogger<ProductDetailModel> _logger) 
         : PageModel
     {
-        public IEnumerable<ProductModel> ProductList { get; set; } = [];
+        public ProductModel Product { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync()
+        [BindProperty]
+        public string Color { get; set; } = default!;
+
+        [BindProperty]
+        public int Quantity { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync(Guid productId)
         {
-            _logger.LogInformation("Index page visited");
-            var result = await _catalogService.GetProducts();
-            //var result = await catalogService.GetProducts(2, 3);
-            ProductList = result.Products;
+            var response = await _catalogService.GetProduct(productId);
+            Product = response.Product;
+
             return Page();
         }
 
@@ -28,8 +33,8 @@ namespace EShop.Web.Pages
                 ProductId = productId,
                 ProductName = productResponse.Product.Name,
                 Price = productResponse.Product.Price,
-                Quantity = 1,
-                Color = "Black",
+                Quantity = Quantity,
+                Color = Color,
             });
 
             await _basketService.StoreBasket(new StoreBasketRequest(basket));
