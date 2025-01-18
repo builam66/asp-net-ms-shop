@@ -26,29 +26,21 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.LOGIN_SERVER}}
+        registry: ${{ secrets.REGISTRY_NAME}}
         username: ${{ secrets.USERNAME}}
         password: ${{ secrets.PASSWORD }}
 
-    # build docker image
-    - name: "Build docker image"
-      run: |
-        docker build . -t ${{ secrets.LOGIN_SERVER }}/aspnetmsshop:${{ github.sha }}
-
-    # push docker image
-    - name: Azure CLI script
+    # build and push docker image
+    - name: "Build and push docker image"
       uses: azure/CLI@v2
       with:
         azcliversion: latest
         inlineScript: |
           az acr login --name ${{ secrets.REGISTRY_NAME }}
-          docker-compose up
+          docker compose build
           docker-compose push
 
-    # - name: "Push docker image"
-    #   run: |
-    #     docker push ${{ secrets.LOGIN_SERVER }}/aspnetmsshop:${{ github.sha }}
-
     # verify images in acr 
-    - name: Verify images in ACR
+    - name: "Verify images in ACR"
       run: |
         az acr repository list --name ${{ secrets.USERNAME }}
