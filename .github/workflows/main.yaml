@@ -53,9 +53,9 @@ jobs:
         docker image ls
 
     # push docker image
-    # - name: "Push docker image"
-    #   run: |
-    #     docker compose -f src/docker-compose.yml push
+    - name: "Push docker image"
+      run: |
+        docker compose -f src/docker-compose.yml push
 
     # verify images in acr 
     # - name: "Verify images in ACR"
