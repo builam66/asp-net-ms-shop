@@ -26,7 +26,6 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.LOGIN_SERVER}}
-        registry: ${{ secrets.REGISTRY_NAME}}
         username: ${{ secrets.USERNAME}}
         password: ${{ secrets.PASSWORD }}
 
@@ -37,8 +36,8 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az acr login --name ${{ secrets.REGISTRY_NAME }}
-          docker compose build
-          docker-compose push
+          docker compose -f src/docker-compose.yml build
+          docker compose -f src/docker-compose.yml push
 
     # verify images in acr 
     - name: "Verify images in ACR"
