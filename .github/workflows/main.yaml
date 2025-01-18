@@ -37,6 +37,10 @@ jobs:
     #     inlineScript: |
     #       az acr login --name ${{ secrets.REGISTRY_NAME }}
 
+    # Set Docker image name
+    - name: "Set Docker image name"
+      run: echo "DOCKER_REGISTRY-=${{ secrets.REGISTRY_NAME }}" >> $GITHUB_ENV
+
     # build docker image
     - name: "Build docker image"
       run: |
@@ -54,6 +58,6 @@ jobs:
     #     docker compose -f src/docker-compose.yml push
 
     # verify images in acr 
-    - name: "Verify images in ACR"
-      run: |
-        az acr repository list --name ${{ secrets.USERNAME }}
+    # - name: "Verify images in ACR"
+    #   run: |
+    #     az acr repository list --name ${{ secrets.USERNAME }}
