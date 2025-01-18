@@ -1,7 +1,29 @@
+using EShop.Web.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var apiGatewayUri = new Uri(builder.Configuration["ApiSettings:APIGateway"]!);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+builder.Services.AddRefitClient<ICatalogService>()
+    .ConfigureHttpClient(c =>
+    {
+        c.BaseAddress = apiGatewayUri;
+    });
+
+builder.Services.AddRefitClient<IBasketService>()
+    .ConfigureHttpClient(c =>
+    {
+        c.BaseAddress = apiGatewayUri;
+    });
+
+builder.Services.AddRefitClient<IOrderingService>()
+    .ConfigureHttpClient(c =>
+    {
+        c.BaseAddress = apiGatewayUri;
+    });
 
 var app = builder.Build();
 
