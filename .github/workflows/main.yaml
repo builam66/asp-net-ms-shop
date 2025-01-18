@@ -22,12 +22,12 @@ jobs:
       uses: actions/checkout@v4
 
     # login to azure
-    - name: "Azure login"
-      uses: azure/docker-login@v2
-      with:
-        login-server: ${{ secrets.LOGIN_SERVER}}
-        username: ${{ secrets.USERNAME}}
-        password: ${{ secrets.PASSWORD }}
+    # - name: "Azure login"
+    #   uses: azure/docker-login@v2
+    #   with:
+    #     login-server: ${{ secrets.LOGIN_SERVER}}
+    #     username: ${{ secrets.USERNAME}}
+    #     password: ${{ secrets.PASSWORD }}
 
     # login to azure container registry
     # - name: "Login to ACR"
@@ -37,25 +37,21 @@ jobs:
     #     inlineScript: |
     #       az acr login --name ${{ secrets.REGISTRY_NAME }}
 
-    # Set Docker image name
-    - name: "Set Docker image name"
-      run: echo "DOCKER_REGISTRY-=${{ secrets.REGISTRY_NAME }}" >> $GITHUB_ENV
-
     # build docker image
-    - name: "Build docker image"
-      run: |
-        docker compose -f src/docker-compose.yml build
+    # - name: "Build docker image"
+    #   run: |
+    #     docker compose -f src/docker-compose.yml build
 
     # verify docker image
-    - name: "Verify docker image"
-      run: |
-        docker ps
-        docker image ls
+    # - name: "Verify docker image"
+    #   run: |
+    #     docker ps
+    #     docker image ls
 
     # push docker image
-    - name: "Push docker image"
-      run: |
-        docker compose -f src/docker-compose.yml push
+    # - name: "Push docker image"
+    #   run: |
+    #     docker compose -f src/docker-compose.yml push
 
     # verify images in acr 
     # - name: "Verify images in ACR"
