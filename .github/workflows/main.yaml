@@ -32,7 +32,7 @@ jobs:
     # set env for docker compose
     - name: "Set environment"
       run: |
-        echo "DOCKER_REGISTRY=${secrets.REGISTRY_NAME}" >> $GITHUB_ENV
+        echo "DOCKER_REGISTRY=$secrets.REGISTRY_NAME" >> $GITHUB_ENV
         echo "${{ DOCKER_REGISTRY }}"
 
     # login to azure container registry
