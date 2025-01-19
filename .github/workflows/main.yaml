@@ -7,9 +7,9 @@ on:
       - main
 
 jobs:
-  build-and-deploy: 
+  build-and-deploy:
     name: "Run docker build and deploy to ACR"
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     environment: production
 
     defaults:
@@ -28,6 +28,12 @@ jobs:
     #     login-server: ${{ secrets.LOGIN_SERVER}}
     #     username: ${{ secrets.USERNAME}}
     #     password: ${{ secrets.PASSWORD }}
+
+    # set env for docker compose
+    - name: "Set environment"
+      run: |
+        export DOCKER_REGISTRY = ${{ secrets.REGISTRY_NAME }}
+        echo $DOCKER_REGISTRY
 
     # login to azure container registry
     # - name: "Login to ACR"
@@ -53,7 +59,7 @@ jobs:
     #   run: |
     #     docker compose -f src/docker-compose.yml push
 
-    # verify images in acr 
+    # verify images in acr
     # - name: "Verify images in ACR"
     #   run: |
     #     az acr repository list --name ${{ secrets.USERNAME }}

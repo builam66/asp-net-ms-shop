@@ -1,4 +1,3 @@
-version: '3.4'
 
 services:
   catalogdb:
@@ -17,37 +16,37 @@ services:
     image: rabbitmq:management
 
   catalog.api:
-    image: ${DOCKER_REGISTRY-}catalogapi
+    image: ${DOCKER_REGISTRY?error}/catalogapi
     build:
       context: .
       dockerfile: Services/Catalog/Catalog.API/Dockerfile
 
   basket.api:
-    image: ${DOCKER_REGISTRY-}basketapi
+    image: ${DOCKER_REGISTRY?error}/basketapi
     build:
       context: .
       dockerfile: Services/Basket/Basket.API/Dockerfile
 
   discount.grpc:
-    image: ${DOCKER_REGISTRY-}discountgrpc
+    image: ${DOCKER_REGISTRY?error}/discountgrpc
     build:
       context: .
       dockerfile: Services/Discount/Discount.Grpc/Dockerfile
 
   ordering.api:
-    image: ${DOCKER_REGISTRY-}orderingapi
+    image: ${DOCKER_REGISTRY?error}/orderingapi
     build:
       context: .
       dockerfile: Services/Ordering/Ordering.API/Dockerfile
 
   yarpapigateway:
-    image: ${DOCKER_REGISTRY-}yarpapigateway
+    image: ${DOCKER_REGISTRY?error}/yarpapigateway
     build:
       context: .
       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
 
   eshop.web:
-    image: ${DOCKER_REGISTRY-}eshopweb
+    image: ${DOCKER_REGISTRY?error}/eshopweb
     build:
       context: .
       dockerfile: WebApp/EShop.Web/Dockerfile
