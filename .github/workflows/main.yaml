@@ -30,11 +30,11 @@ jobs:
     #     password: ${{ secrets.PASSWORD }}
 
     # set env for docker compose
-    - name: "Set environment"
-      run: |
-        export DOCKER_REGISTRY=${{ secrets.REGISTRY_NAME }}
-        $env:DOCKER_REGISTRY = ${{ secrets.REGISTRY_NAME }}
-        echo $DOCKER_REGISTRY
+    # - name: "Set environment"
+    #   run: |
+    #     export DOCKER_REGISTRY=${{ secrets.REGISTRY_NAME }}
+    #     $env:DOCKER_REGISTRY = ${{ secrets.REGISTRY_NAME }}
+    #     echo $DOCKER_REGISTRY
 
     # login to azure container registry
     # - name: "Login to ACR"
@@ -46,8 +46,10 @@ jobs:
 
     # build docker image
     - name: "Build docker image"
+      env: 
+        DOCKER_REGISTRY: ${{ secrets.REGISTRY_NAME }}
       run: |
-        docker compose -f src/docker-compose.yml -f src/docker-compose.override.yml build
+        DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }} docker compose -f src/docker-compose.yml -f src/docker-compose.override.yml build
 
     # verify docker image
     - name: "Verify docker image"
