@@ -22,12 +22,12 @@ jobs:
       uses: actions/checkout@v4
 
     # login to azure (success)
-    # - name: "Azure login"
-    #   uses: azure/docker-login@v2
-    #   with:
-    #     login-server: ${{ secrets.LOGIN_SERVER}}
-    #     username: ${{ secrets.USERNAME}}
-    #     password: ${{ secrets.PASSWORD }}
+    - name: "Azure login"
+      uses: azure/docker-login@v2
+      with:
+        login-server: ${{ secrets.LOGIN_SERVER}}
+        username: ${{ secrets.USERNAME}}
+        password: ${{ secrets.PASSWORD }}
 
     # set env for docker compose (fail)
     # - name: "Set environment"
