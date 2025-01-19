@@ -32,7 +32,6 @@ jobs:
     # set env for docker compose
     - name: "Set environment"
       run: |
-    #    export DOCKER_REGISTRY=${{ secrets.REGISTRY_NAME }}
         echo "DOCKER_REGISTRY=${{ secrets.REGISTRY_NAME }}" >> $GITHUB_ENV
         echo "${{ DOCKER_REGISTRY }}"
 
