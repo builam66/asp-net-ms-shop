@@ -33,6 +33,7 @@ jobs:
     - name: "Set environment"
       run: |
         export DOCKER_REGISTRY=${{ secrets.REGISTRY_NAME }}
+        $env:DOCKER_REGISTRY = ${{ secrets.REGISTRY_NAME }}
         echo $DOCKER_REGISTRY
 
     # login to azure container registry
