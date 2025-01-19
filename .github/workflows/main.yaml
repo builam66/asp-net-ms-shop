@@ -17,11 +17,11 @@ jobs:
         shell: bash
 
     steps:
-    # check out code
+    # check out code (success)
     - name: "Checkout repository"
       uses: actions/checkout@v4
 
-    # login to azure
+    # login to azure (success)
     # - name: "Azure login"
     #   uses: azure/docker-login@v2
     #   with:
@@ -29,14 +29,14 @@ jobs:
     #     username: ${{ secrets.USERNAME}}
     #     password: ${{ secrets.PASSWORD }}
 
-    # set env for docker compose
+    # set env for docker compose (fail)
     # - name: "Set environment"
     #   run: |
     #     export DOCKER_REGISTRY=${{ secrets.REGISTRY_NAME }}
     #     $env:DOCKER_REGISTRY = ${{ secrets.REGISTRY_NAME }}
     #     echo $DOCKER_REGISTRY
 
-    # login to azure container registry
+    # login to azure container registry (fail)
     # - name: "Login to ACR"
     #   uses: azure/cli@v2
     #   with:
@@ -44,25 +44,27 @@ jobs:
     #     inlineScript: |
     #       az acr login --name ${{ secrets.REGISTRY_NAME }}
 
-    # build docker image
+    # build docker image (success)
     - name: "Build docker image"
       env: 
         DOCKER_REGISTRY: ${{ secrets.REGISTRY_NAME }}
       run: |
         DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }} docker compose -f src/docker-compose.yml -f src/docker-compose.override.yml build
 
-    # verify docker image
+    # verify docker image (success)
     - name: "Verify docker image"
       run: |
         docker ps
         docker image ls
 
     # push docker image
-    # - name: "Push docker image"
-    #   run: |
-    #     docker compose -f src/docker-compose.yml push
+    - name: "Push docker image"
+      env: 
+        DOCKER_REGISTRY: ${{ secrets.REGISTRY_NAME }}
+      run: |
+        DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }} docker compose -f src/docker-compose.yml -f src/docker-compose.override.yml push
 
-    # verify images in acr
+    # verify images in acr (fail)
     # - name: "Verify images in ACR"
     #   run: |
     #     az acr repository list --name ${{ secrets.USERNAME }}
