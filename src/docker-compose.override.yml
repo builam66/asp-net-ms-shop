@@ -55,8 +55,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # - ASPNETCORE_Kestrel__Certificates__Default__Password=
-      # - ASPNETCORE_Kestrel__Certificates__Default__Path=/home/app/.aspnet/https/Catalog.API.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings__Database=Server=catalogdb;Port=5432;Database=CatalogDb;User Id=postgres;Password=postgres;Include Error Detail=true
     depends_on:
       - catalogdb
@@ -72,8 +72,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # - ASPNETCORE_Kestrel__Certificates__Default__Password=
-      # - ASPNETCORE_Kestrel__Certificates__Default__Path=/home/app/.aspnet/https/Basket.API.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings__Database=Server=basketdb;Port=5432;Database=BasketDb;User Id=postgres;Password=postgres;Include Error Detail=true
       - ConnectionStrings__Redis=distributedcache:6379
       - GrpcSettings__DiscountUrl=https://discount.grpc:8081
@@ -97,8 +97,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # - ASPNETCORE_Kestrel__Certificates__Default__Password=
-      # - ASPNETCORE_Kestrel__Certificates__Default__Path=/home/app/.aspnet/https/Discount.Grpc.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings__Database=Data Source=discountdb
     ports:
       - "6002:8080"
@@ -112,8 +112,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # - ASPNETCORE_Kestrel__Certificates__Default__Password=
-      # - ASPNETCORE_Kestrel__Certificates__Default__Path=/home/app/.aspnet/https/Ordering.API.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings__Database=Server=orderdb;Database=OrderDb;User Id=sa;Password=123456Abc;Encrypt=False;TrustServerCertificate=True
       - MessageBroker__Host=amqp://ecommerce-mq:5672
       - MessageBroker__Username=guest
@@ -134,8 +134,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # - ASPNETCORE_Kestrel__Certificates__Default__Password=
-      # - ASPNETCORE_Kestrel__Certificates__Default__Path=/home/app/.aspnet/https/YarpApiGateway.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     depends_on:
       - catalog.api
       - basket.api
@@ -152,8 +152,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # - ASPNETCORE_Kestrel__Certificates__Default__Password=
-      # - ASPNETCORE_Kestrel__Certificates__Default__Path=/home/app/.aspnet/https/EShop.Web.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ApiSettings__APIGateway=http://yarpapigateway:8080
     depends_on:
       - yarpapigateway
