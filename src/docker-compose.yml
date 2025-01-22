@@ -16,37 +16,37 @@ services:
     image: rabbitmq:management
 
   catalog.api:
-    image: ${DOCKER_REGISTRY?error}/catalogapi
+    image: ${DOCKER_REGISTRY?error}/catalogapi:latest
     build:
       context: .
       dockerfile: Services/Catalog/Catalog.API/Dockerfile
 
   basket.api:
-    image: ${DOCKER_REGISTRY?error}/basketapi
+    image: ${DOCKER_REGISTRY?error}/basketapi:latest
     build:
       context: .
       dockerfile: Services/Basket/Basket.API/Dockerfile
 
   discount.grpc:
-    image: ${DOCKER_REGISTRY?error}/discountgrpc
+    image: ${DOCKER_REGISTRY?error}/discountgrpc:latest
     build:
       context: .
       dockerfile: Services/Discount/Discount.Grpc/Dockerfile
 
   ordering.api:
-    image: ${DOCKER_REGISTRY?error}/orderingapi
+    image: ${DOCKER_REGISTRY?error}/orderingapi:latest
     build:
       context: .
       dockerfile: Services/Ordering/Ordering.API/Dockerfile
 
   yarpapigateway:
-    image: ${DOCKER_REGISTRY?error}/yarpapigateway
+    image: ${DOCKER_REGISTRY?error}/yarpapigateway:latest
     build:
       context: .
       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
 
   eshop.web:
-    image: ${DOCKER_REGISTRY?error}/eshopweb
+    image: ${DOCKER_REGISTRY?error}/eshopweb:latest
     build:
       context: .
       dockerfile: WebApp/EShop.Web/Dockerfile
