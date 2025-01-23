@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.RateLimiting;
+using YarpApiGateway;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
-builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+//builder.Services.AddReverseProxy()
+//    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+builder.Services.AddYarpReverseProxy(builder.Configuration);
 
 builder.Services.AddRateLimiter(rateLimiterOptions =>
 {
