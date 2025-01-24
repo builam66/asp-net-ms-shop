@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderingapi-service
+spec:
+  selector:
+    app: orderingapi
+  ports:
+    - protocol: TCP
+      port: 6003
+      targetPort: 8080
+      name: http
+#    - protocol: TCP
+#      port: 6063
+#      targetPort: 8081
+#      name: https
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderingapi-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderingapi
+  #  strategy:
+  #    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: orderingapi
+    spec:
+      containers:
+        - name: orderingapi
+          image: aspnetmsshop.azurecr.io/orderingapi:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          #            - containerPort: 8081
+          #              protocol: TCP
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: ASPNETCORE_HTTP_PORTS
+              value: "8080"
+            - name: ConnectionStrings__Database
+              value: "Server=orderdb-service;Database=OrderDb;User Id=sa;Password=123456Abc;Encrypt=False;TrustServerCertificate=True"
+            - name: MessageBroker__Host
+              value: "amqp://guest:guest@messagebroker:5672"
+            - name: MessageBroker__Username
+              value: "guest"
+            - name: MessageBroker__Password
+              value: "guest"
+            - name: FeatureManagement__OrderFullfilment
+              value: "false"
+          imagePullPolicy: Always
+      imagePullSecrets:
+        - name: acr-secret
+      restartPolicy: Always

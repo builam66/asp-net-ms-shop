@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: distributedcache
+spec:
+  selector:
+    app: distributedcache
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: distributedcache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: distributedcache
+  template:
+    metadata:
+      labels:
+        app: distributedcache
+    spec:
+      containers:
+        - name: distributedcache
+          image: redis
+          ports:
+            - containerPort: 6379

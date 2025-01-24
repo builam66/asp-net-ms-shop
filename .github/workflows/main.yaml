@@ -9,6 +9,7 @@ on:
 jobs:
   build-and-deploy:
     name: "Run docker build and deploy to ACR"
+    if: contains(github.event.head_commit.message, 'release')
     runs-on: ubuntu-latest
     environment: production
 
@@ -46,7 +47,7 @@ jobs:
 
     # build docker image (success)
     - name: "Build docker image"
-      env: 
+      env:
         DOCKER_REGISTRY: ${{ secrets.REGISTRY_NAME }}
       run: |
         DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }} docker compose -f src/docker-compose.yml -f src/docker-compose.override.yml build
@@ -59,7 +60,7 @@ jobs:
 
     # push docker image
     - name: "Push docker image"
-      env: 
+      env:
         DOCKER_REGISTRY: ${{ secrets.REGISTRY_NAME }}
       run: |
         DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }} docker compose -f src/docker-compose.yml -f src/docker-compose.override.yml push

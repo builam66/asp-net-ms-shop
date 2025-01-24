@@ -400,3 +400,4 @@ FodyWeavers.xsd
 /src/Services/Discount/Discount.Grpc/discountdb-shm
 /src/Services/Discount/Discount.Grpc/discountdb-wal
 /deployment/k8s/.idea
+/deployment/.local
