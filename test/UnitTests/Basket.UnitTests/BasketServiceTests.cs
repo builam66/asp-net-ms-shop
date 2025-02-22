@@ -10,18 +10,18 @@ using Moq;
 namespace Basket.UnitTests;
 
 [TestFixture]
-public class CheckoutBasketTests
+public class BasketServiceTests
 {
     private Mock<IBasketRepository> _basketRepositoryMock;
     private Mock<IPublishEndpoint> _publishEndpointMock;
-    private CheckoutBasketCommandHandler _handler;
+    private CheckoutBasketCommandHandler _checkoutBasketHandler;
 
     [SetUp]
     public void Setup()
     {
         _basketRepositoryMock = new Mock<IBasketRepository>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
-        _handler = new CheckoutBasketCommandHandler(_basketRepositoryMock.Object, _publishEndpointMock.Object);
+        _checkoutBasketHandler = new CheckoutBasketCommandHandler(_basketRepositoryMock.Object, _publishEndpointMock.Object);
     }
 
     [Test]
@@ -47,7 +47,7 @@ public class CheckoutBasketTests
             .ReturnsAsync(true);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _checkoutBasketHandler.Handle(command, CancellationToken.None);
 
         // Assert
         Assert.That(result.IsSuccess, Is.True);
@@ -70,7 +70,7 @@ public class CheckoutBasketTests
         //    .ThrowsAsync(basketNotFoundException);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _checkoutBasketHandler.Handle(command, CancellationToken.None);
 
         // Assert
         Assert.That(result.IsSuccess, Is.False);

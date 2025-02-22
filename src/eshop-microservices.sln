@@ -49,6 +49,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basket.UnitTests", "..\test\UnitTests\Basket.UnitTests\Basket.UnitTests.csproj", "{96CF5C0C-04D6-4D3E-A5F8-6AB87EE93132}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ordering.UnitTests", "..\test\UnitTests\Ordering.UnitTests\Ordering.UnitTests.csproj", "{745B76FA-2335-4315-81E6-608B1A07A884}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,10 @@ Global
 		{96CF5C0C-04D6-4D3E-A5F8-6AB87EE93132}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96CF5C0C-04D6-4D3E-A5F8-6AB87EE93132}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96CF5C0C-04D6-4D3E-A5F8-6AB87EE93132}.Release|Any CPU.Build.0 = Release|Any CPU
+		{745B76FA-2335-4315-81E6-608B1A07A884}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{745B76FA-2335-4315-81E6-608B1A07A884}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{745B76FA-2335-4315-81E6-608B1A07A884}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{745B76FA-2335-4315-81E6-608B1A07A884}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -129,5 +135,6 @@ Global
 		{576D2254-0EC8-42DC-ADEA-EED6F66200B5} = {E63F144B-4BAA-4770-A1C9-8C56AF2A0857}
 		{FD5B457D-8528-47D5-B0FC-157B555E48F1} = {13D5EDDE-88EF-4A06-AA14-FEC68A902CF7}
 		{96CF5C0C-04D6-4D3E-A5F8-6AB87EE93132} = {FD5B457D-8528-47D5-B0FC-157B555E48F1}
+		{745B76FA-2335-4315-81E6-608B1A07A884} = {FD5B457D-8528-47D5-B0FC-157B555E48F1}
 	EndGlobalSection
 EndGlobal
