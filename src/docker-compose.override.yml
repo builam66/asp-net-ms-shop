@@ -50,6 +50,18 @@ services:
       - "5672:5672"
       - "15672:15672"
 
+  identitydb:
+    container_name: identitydb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=IdentityDb
+    restart: always
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_identity:/var/lib/postgresql/data/
+
   catalog.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -160,6 +172,23 @@ services:
     ports:
       - "6005:8080"
       - "6065:8081"
+    volumes:
+      - ~/.microsoft/usersecrets:/usersecrets:ro
+      - ~/.aspnet/https:/https:ro
+
+  identity.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings__Database=Server=identitydb;Port=5432;Database=IdentityDb;User Id=postgres;Password=postgres;Include Error Detail=true
+    depends_on:
+      - identitydb
+    ports:
+      - "6006:8080"
+      - "6066:8081"
     volumes:
       - ~/.microsoft/usersecrets:/usersecrets:ro
       - ~/.aspnet/https:/https:ro

@@ -8,7 +8,8 @@
         "basket.api": "StartDebugging",
         "ordering.api": "StartDebugging",
         "yarpapigateway": "StartDebugging",
-        "eshop.web": "StartDebugging"
+        "eshop.web": "StartDebugging",
+        "identity.api": "StartDebugging"
       }
     }
   }

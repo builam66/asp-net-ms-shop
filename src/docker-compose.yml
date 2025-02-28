@@ -15,6 +15,9 @@ services:
   messagebroker:
     image: rabbitmq:management
 
+  identitydb:
+    image: postgres
+
   catalog.api:
     image: ${DOCKER_REGISTRY?error}/catalogapi:latest
     build:
@@ -51,7 +54,14 @@ services:
       context: .
       dockerfile: WebApp/EShop.Web/Dockerfile
 
+  identity.api:
+    image: ${DOCKER_REGISTRY?error}/identityapi:latest
+    build:
+      context: .
+      dockerfile: Services/Identity/Identity.API/Dockerfile
+
 volumes:
   postgres_catalog:
   postgres_basket:
+  postgres_identity:
 
