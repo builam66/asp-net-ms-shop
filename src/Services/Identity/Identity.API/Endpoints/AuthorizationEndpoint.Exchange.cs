@@ -12,10 +12,10 @@
             var request = httpContext.GetOpenIddictServerRequest() ??
                 throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
-            if (request.IsClientCredentialsGrantType())
-            {
-                return await ClientCredentialsExchange(request, applicationManager, scopeManager);
-            }
+            //if (request.IsClientCredentialsGrantType())
+            //{
+            //    return await ClientCredentialsExchange(request, applicationManager, scopeManager);
+            //}
 
             if (request.IsRefreshTokenGrantType())
             {

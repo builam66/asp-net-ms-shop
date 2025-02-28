@@ -32,7 +32,7 @@
                     // AllowHybridFlow - combination of AllowAuthorizationCodeFlow and AllowImplicitFlow (/authorization & /token)
                     // AllowPasswordFlow - directly using the user's username and password
                     options
-                        .AllowClientCredentialsFlow()
+                        //.AllowClientCredentialsFlow()
                         //.AllowAuthorizationCodeFlow()
                         .AllowRefreshTokenFlow()
                         //.AllowHybridFlow()
