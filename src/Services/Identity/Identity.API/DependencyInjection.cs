@@ -1,8 +1,8 @@
-﻿namespace Identity.API.Extensions
+﻿namespace Identity.API
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddOpenIddict
+        public static IServiceCollection AddOpenIddictService
             (this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -69,20 +69,21 @@
                         .UseAspNetCore()
                         .EnableTokenEndpointPassthrough()
                         //.EnableAuthorizationEndpointPassthrough()
-                        .EnableEndSessionEndpointPassthrough();
+                        .EnableEndSessionEndpointPassthrough()
+                        .DisableTransportSecurityRequirement(); // Disable HTTPS enforcement (only safe behind a proxy)
                 });
-                //.AddValidation(options =>
-                //{
-                //    options.UseLocalServer();
-                //    options.UseAspNetCore();
-                //});
+            //.AddValidation(options =>
+            //{
+            //    options.UseLocalServer();
+            //    options.UseAspNetCore();
+            //});
 
             // Add the Entity Framework Core and the default Razor Pages built-in UI
             services
                 .AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-                //.AddDefaultUI();
+            //.AddDefaultUI();
 
             services.AddHostedService<SeedData>();
 

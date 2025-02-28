@@ -1,3 +1,5 @@
+using Identity.API;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
@@ -10,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 //    options.Cookie.IsEssential = true;
 //});
 
-builder.Services.AddOpenIddict(builder.Configuration);
+builder.Services.AddOpenIddictService(builder.Configuration);
 
 builder.Services.AddHttpClient("TokenApiClient", client =>
 {
@@ -29,7 +31,9 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
+
+//app.UseMiddleware<BodyToFormMiddleware>();
 
 //app.UseSession();
 

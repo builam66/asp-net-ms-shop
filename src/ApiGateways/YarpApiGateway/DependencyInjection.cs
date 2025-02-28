@@ -1,4 +1,5 @@
 ﻿using Yarp.ReverseProxy.Configuration;
+using YarpApiGateway.Helpers;
 
 namespace YarpApiGateway
 {
@@ -6,7 +7,7 @@ namespace YarpApiGateway
     {
         public static IServiceCollection AddYarpReverseProxy(this IServiceCollection services, IConfiguration configuration)
         {
-            var transforms = new[]
+            var commonTransforms = new[]
             {
                 new Dictionary<string, string> { { "PathPattern", "{**catch-all}" } }
             };
@@ -21,7 +22,7 @@ namespace YarpApiGateway
                     {
                         Path = "/catalog-service/{**catch-all}"
                     },
-                    Transforms = transforms,
+                    Transforms = commonTransforms,
                 },
                 new RouteConfig
                 {
@@ -31,7 +32,7 @@ namespace YarpApiGateway
                     {
                         Path = "/basket-service/{**catch-all}"
                     },
-                    Transforms = transforms,
+                    Transforms = commonTransforms,
                 },
                 new RouteConfig
                 {
@@ -41,8 +42,29 @@ namespace YarpApiGateway
                     {
                         Path = "/ordering-service/{**catch-all}"
                     },
-                    Transforms = transforms,
-                }
+                    Transforms = commonTransforms,
+                },
+                new RouteConfig
+                {
+                    RouteId = "login-route",
+                    ClusterId = "identity-cluster",
+                    Match = new RouteMatch { Path = "/identity-service/login" },
+                    Transforms =
+                    [
+                        new Dictionary<string, string> { { "PathPattern", "/connect/token" } },
+                        //new Dictionary<string, string> { { "RequestTransform", "ModifyLoginRequest" } }
+                    ],
+                },
+                new RouteConfig
+                {
+                    RouteId = "register-route",
+                    ClusterId = "identity-cluster",
+                    Match = new RouteMatch { Path = "/identity-service/register" },
+                    Transforms =
+                    [
+                        new Dictionary<string, string> { { "PathPattern", "/connect/user/register" } }
+                    ],
+                },
             };
 
             var clusters = new[]
@@ -53,7 +75,7 @@ namespace YarpApiGateway
                     Destinations = new Dictionary<string, DestinationConfig>
                     {
                         {
-                            "destination1", new DestinationConfig
+                            "catalog-service", new DestinationConfig
                             {
                                 Address = configuration["ClustersAddress:CatalogCluster"]!,
                             }
@@ -66,7 +88,7 @@ namespace YarpApiGateway
                     Destinations = new Dictionary<string, DestinationConfig>
                     {
                         {
-                            "destination1", new DestinationConfig
+                            "basket-service", new DestinationConfig
                             {
                                 Address = configuration["ClustersAddress:BasketCluster"]!,
                             }
@@ -79,16 +101,32 @@ namespace YarpApiGateway
                     Destinations = new Dictionary<string, DestinationConfig>
                     {
                         {
-                            "destination1", new DestinationConfig
+                            "ordering-service", new DestinationConfig
                             {
                                 Address = configuration["ClustersAddress:OrderingCluster"]!,
                             }
                         }
                     }
-                }
+                },
+                new ClusterConfig
+                {
+                    ClusterId = "identity-cluster",
+                    Destinations = new Dictionary<string, DestinationConfig>
+                    {
+                        {
+                            "identity-service", new DestinationConfig
+                            {
+                                Address = configuration["ClustersAddress:IdentityCluster"]!,
+                            }
+                        }
+                    }
+                },
             };
 
-            services.AddReverseProxy().LoadFromMemory(routes, clusters);
+            services
+                .AddReverseProxy()
+                .LoadFromMemory(routes, clusters)
+                .AddTransforms<ModifyBodyTransformProvider>();
 
             return services;
         }

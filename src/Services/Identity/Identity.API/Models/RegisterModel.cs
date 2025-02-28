@@ -1,6 +1,6 @@
 ﻿namespace Identity.API.Models
 {
-    public class RegisterRequest
+    public class RegisterModel
     {
         [Required]
         [EmailAddress]

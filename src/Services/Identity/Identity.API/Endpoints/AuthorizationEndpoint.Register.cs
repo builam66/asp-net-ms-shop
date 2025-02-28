@@ -3,30 +3,22 @@
     public partial class AuthorizationEndpoint
     {
         public static async Task<IResult> RegisterUser(
-            HttpContext httpContext,
+            RegisterModel registerData,
             UserManager<IdentityUser> userManager)
         {
-            var form = await httpContext.Request.ReadFormAsync();
-            var request = new RegisterRequest
-            {
-                Email = form["email"]!,
-                Username = form["username"]!,
-                Password = form["password"]!,
-            };
-
-            if (!request.TryValidate(out var validationErrors))
+            if (!registerData.TryValidate(out var validationErrors))
             {
                 return Results.BadRequest(validationErrors);
             }
 
-            var user = await userManager.FindByEmailAsync(request.Email);
+            var user = await userManager.FindByEmailAsync(registerData.Email);
             if (user != null)
             {
                 return Results.Conflict();
             }
 
-            user = new IdentityUser { UserName = request.Username, Email = request.Email };
-            var result = await userManager.CreateAsync(user, request.Password);
+            user = new IdentityUser { UserName = registerData.Username, Email = registerData.Email };
+            var result = await userManager.CreateAsync(user, registerData.Password);
 
             if (result.Succeeded)
             {
