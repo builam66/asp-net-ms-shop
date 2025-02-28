@@ -33,14 +33,14 @@
                     // AllowPasswordFlow - directly using the user's username and password
                     options
                         .AllowClientCredentialsFlow()
-                        .AllowAuthorizationCodeFlow()
+                        //.AllowAuthorizationCodeFlow()
                         .AllowRefreshTokenFlow()
-                        .AllowHybridFlow()
+                        //.AllowHybridFlow()
                         .AllowPasswordFlow();
                     //.RequireProofKeyForCodeExchange();
 
                     options
-                        .SetAuthorizationEndpointUris("/connect/authorize")
+                        //.SetAuthorizationEndpointUris("/connect/authorize")
                         .SetTokenEndpointUris("/connect/token")
                         .SetEndSessionEndpointUris("/connect/logout");
 
@@ -57,12 +57,7 @@
                         .AddEphemeralSigningKey();
 
                     // Register scopes (permissions)
-                    options.RegisterScopes(
-                        OpenIddictConstants.Scopes.OpenId,
-                        OpenIddictConstants.Scopes.Profile,
-                        OpenIddictConstants.Scopes.OfflineAccess,
-                        "api"
-                    );
+                    options.RegisterScopes(Scopes.OpenId, Scopes.Profile, Scopes.OfflineAccess);
 
                     // Disable access token encryption, simplify token handling
                     options.DisableAccessTokenEncryption();
@@ -72,7 +67,7 @@
                     options
                         .UseAspNetCore()
                         .EnableTokenEndpointPassthrough()
-                        .EnableAuthorizationEndpointPassthrough()
+                        //.EnableAuthorizationEndpointPassthrough()
                         .EnableEndSessionEndpointPassthrough();
                 });
                 //.AddValidation(options =>

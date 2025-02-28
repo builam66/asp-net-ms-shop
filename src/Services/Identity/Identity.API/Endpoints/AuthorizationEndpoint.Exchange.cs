@@ -17,10 +17,21 @@
                 return await ClientCredentialsExchange(request, applicationManager, scopeManager);
             }
 
-            if (request.IsAuthorizationCodeGrantType() || request.IsRefreshTokenGrantType())
+            if (request.IsRefreshTokenGrantType())
             {
                 var authenticateResult = await httpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-                return await AuthorizationCodeAndRefreshTokenExchange(authenticateResult, userManager, signInManager);
+                if (authenticateResult.Succeeded == false || authenticateResult.Principal == null)
+                {
+                    var failureMessage = authenticateResult.Failure?.Message;
+                    var failureException = authenticateResult.Failure?.InnerException;
+                    return Results.BadRequest(new OpenIddictResponse
+                    {
+                        Error = Errors.InvalidRequest,
+                        ErrorDescription = failureMessage + failureException,
+                    });
+                }
+
+                return await RefreshTokenExchange(authenticateResult, userManager, signInManager, scopeManager);
             }
 
             if (request.IsPasswordGrantType())
@@ -68,52 +79,63 @@
             return Results.SignIn(principal, authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
-        private static async Task<IResult> AuthorizationCodeAndRefreshTokenExchange(
+        private static async Task<IResult> RefreshTokenExchange(
             AuthenticateResult authenticateResult,
             UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            SignInManager<IdentityUser> signInManager,
+            IOpenIddictScopeManager scopeManager)
         {
+            // Retrieve the user profile corresponding to the authorization code/refresh token.
             var user = await userManager.FindByIdAsync(authenticateResult.Principal?.GetClaim(Claims.Subject) ?? string.Empty);
             if (user is null)
             {
-                return Results.Forbid(
-                    authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme],
-                    properties: new AuthenticationProperties(new Dictionary<string, string>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The token is no longer valid."
-                    }!)
-                );
+                return Results.BadRequest(new OpenIddictResponse
+                {
+                    Error = Errors.InvalidGrant,
+                    ErrorDescription = "The token is no longer valid."
+                });
             }
 
-            if (!await signInManager.CanSignInAsync(user))
+            var canSignIn = await signInManager.CanSignInAsync(user);
+            if (canSignIn == false)
             {
-                return Results.Forbid(
-                    authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme],
-                    properties: new AuthenticationProperties(new Dictionary<string, string>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is no longer allowed to sign in."
-                    }!)
-                );
+                return Results.BadRequest(new OpenIddictResponse
+                {
+                    Error = Errors.InvalidGrant,
+                    ErrorDescription = "The user is no longer allowed to sign in."
+                });
             }
 
-            var identity = new ClaimsIdentity(
-                authenticationType: TokenValidationParameters.DefaultAuthenticationType,
-                nameType: Claims.Name,
-            roleType: Claims.Role);
-            identity
-                .SetClaim(Claims.Subject, await userManager.GetUserIdAsync(user))
-                .SetClaim(Claims.Email, await userManager.GetEmailAsync(user))
-                .SetClaim(Claims.Name, await userManager.GetUserNameAsync(user))
-                .SetClaim(Claims.PreferredUsername, await userManager.GetUserNameAsync(user))
-                .SetClaims(Claims.Role, [.. (await userManager.GetRolesAsync(user))]);
+            var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, Claims.Name, Claims.Role);
 
+            // You have to grant the 'offline_access' scope to allow
+            // OpenIddict to return a refresh token to the caller.
+            identity.SetScopes(Scopes.OfflineAccess);
+
+            identity
+                .SetClaim(Claims.Subject, user.Id)
+                .SetClaim(Claims.Email, user.Email)
+                .SetClaim(Claims.Name, user.UserName)
+                .SetClaim(Claims.Audience, "Resourse");
+
+            var userRoles = await userManager.GetRolesAsync(user);
+            identity.SetClaims(Claims.Role, [..userRoles]);
+
+            // Getting scopes from user parameters (TokenViewModel)
+            // Checking in OpenIddictScopes tables for matching resources
+            // Adding in Identity
+            var asyncResources = scopeManager.ListResourcesAsync(identity.GetScopes());
+            var resources = new List<string>();
+            await foreach (var resource in asyncResources)
+            {
+                resources.Add(resource);
+            }
+            identity.SetResources(resources);
+
+            // Setting destinations of claims i.e. identity token or access token
             identity.SetDestinations(GetDestinations);
 
-            var principal = new ClaimsPrincipal(identity);
-
-            return Results.SignIn(principal, authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            return Results.SignIn(new ClaimsPrincipal(identity), new(), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
         private static async Task<IResult> PasswordExchange(
@@ -135,12 +157,14 @@
 
             // Check that the user can sign in and is not locked out.
             // If two-factor authentication is supported, it would also be appropriate to check that 2FA is enabled for the user
-            if (!await signInManager.CanSignInAsync(user) || (userManager.SupportsUserLockout && await userManager.IsLockedOutAsync(user)))
+            var canSignIn = await signInManager.CanSignInAsync(user);
+            var isLockedOut = userManager.SupportsUserLockout && await userManager.IsLockedOutAsync(user);
+            if (canSignIn == false || isLockedOut == true)
             {
                 // Return bad request is the user can't sign in
                 return Results.BadRequest(new OpenIddictResponse
                 {
-                    Error = OpenIddictConstants.Errors.InvalidGrant,
+                    Error = Errors.InvalidGrant,
                     ErrorDescription = "The specified user cannot sign in."
                 });
             }
@@ -149,7 +173,7 @@
 
             // Validate the username/password parameters and ensure the account is not locked out.
             var result = await signInManager.PasswordSignInAsync(user.UserName!, request.Password!, false, lockoutOnFailure: false);
-            if (!result.Succeeded)
+            if (result.Succeeded == false)
             {
                 if (result.IsNotAllowed)
                 {
@@ -193,8 +217,15 @@
                 await userManager.ResetAccessFailedCountAsync(user);
             }
 
-            //// Getting scopes from user parameters (TokenViewModel) and adding in Identity 
+            // Getting scopes from user parameters (TokenViewModel) and adding in Identity 
             identity.SetScopes(request.GetScopes());
+
+            // You have to grant the 'offline_access' scope to allow
+            // OpenIddict to return a refresh token to the caller.
+            if (request.Scope != null && string.IsNullOrEmpty(request.Scope) == false && request.Scope.Split(' ').Contains(Scopes.OfflineAccess))
+            {
+                identity.SetScopes(Scopes.OfflineAccess);
+            }
 
             // Getting scopes from user parameters (TokenViewModel)
             // Checking in OpenIddictScopes tables for matching resources
@@ -209,8 +240,14 @@
 
             // Add Custom claims
             // sub claims is mendatory
-            identity.AddClaim(new Claim(Claims.Subject, user.Id));
-            identity.AddClaim(new Claim(Claims.Audience, "Resourse"));
+            identity
+                .SetClaim(Claims.Subject, user.Id)
+                .SetClaim(Claims.Email, user.Email)
+                .SetClaim(Claims.Name, user.UserName)
+                .SetClaim(Claims.Audience, "Resourse");
+
+            var userRoles = await userManager.GetRolesAsync(user);
+            identity.SetClaims(Claims.Role, [.. userRoles]);
 
             // Setting destinations of claims i.e. identity token or access token
             identity.SetDestinations(GetDestinations);

@@ -3,9 +3,17 @@
     public partial class AuthorizationEndpoint
     {
         public static async Task<IResult> RegisterUser(
-            RegisterRequest request,
+            HttpContext httpContext,
             UserManager<IdentityUser> userManager)
         {
+            var form = await httpContext.Request.ReadFormAsync();
+            var request = new RegisterRequest
+            {
+                Email = form["email"]!,
+                Username = form["username"]!,
+                Password = form["password"]!,
+            };
+
             if (!request.TryValidate(out var validationErrors))
             {
                 return Results.BadRequest(validationErrors);
