@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 //    options.Cookie.IsEssential = true;
 //});
 
-builder.AddOpenIddict();
+builder.Services.AddOpenIddict(builder.Configuration);
 
 builder.Services.AddHttpClient("TokenApiClient", client =>
 {
@@ -39,5 +39,10 @@ app.UseAuthentication();
 app.MapCarter();
 
 //app.MapRazorPages();
+
+if (app.Environment.IsDevelopment())
+{
+    await app.InitializeDatabaseAsync();
+}
 
 app.Run();

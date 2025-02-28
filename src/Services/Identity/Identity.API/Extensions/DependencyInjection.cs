@@ -1,21 +1,22 @@
 ﻿namespace Identity.API.Extensions
 {
-    public static class OpenIddictExtensions
+    public static class DependencyInjection
     {
-        public static WebApplicationBuilder AddOpenIddict(this WebApplicationBuilder builder)
+        public static IServiceCollection AddOpenIddict
+            (this IServiceCollection services, IConfiguration configuration)
         {
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
                 // Register data storage context
                 // Configure the context to use an in-memory store.
-                options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
+                options.UseNpgsql(configuration.GetConnectionString("Database"));
                 // Register the entity sets needed by OpenIddict.
                 options.UseOpenIddict();
                 // Authorization server is integrated with the data storage,
                 // ready to receive registration of data related to the authorization of applications
             });
 
-            builder.Services.AddOpenIddict()
+            services.AddOpenIddict()
                 // Register the OpenIddict core components
                 .AddCore(options =>
                 {
@@ -77,17 +78,17 @@
                 //});
 
             // Add the Entity Framework Core and the default Razor Pages built-in UI
-            builder.Services
+            services
                 .AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
                 //.AddDefaultUI();
 
-            builder.Services.AddHostedService<SeedData>();
+            services.AddHostedService<SeedData>();
 
             // https://localhost:5055/.well-known/openid-configuration
 
-            return builder;
+            return services;
         }
     }
 }

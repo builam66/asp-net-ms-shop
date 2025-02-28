@@ -21,24 +21,24 @@
 
             var appDescriptor = new OpenIddictApplicationDescriptor()
             {
-                ClientId = "test_client",
-                ClientSecret = "test_secret",
-                DisplayName = "Test App",
-                RedirectUris = { new Uri("https://localhost:5055/callback") },
+                ClientId = "yarp_gateway_client",
+                ClientSecret = "yarp_gateway_secret",
+                DisplayName = "Yarp Gateway",
+                //RedirectUris = { new Uri("https://localhost:5055/callback") },
                 //RedirectUris = { new Uri("https://oauth.pstmn.io/v1/callback") },
                 ClientType = ClientTypes.Confidential,
                 Permissions =
                 {
                     Permissions.Endpoints.Token,
-                    Permissions.Endpoints.Authorization,
+                    //Permissions.Endpoints.Authorization,
                     Permissions.Endpoints.EndSession,
 
-                    Permissions.GrantTypes.ClientCredentials,
-                    Permissions.GrantTypes.AuthorizationCode,
+                    //Permissions.GrantTypes.ClientCredentials,
+                    //Permissions.GrantTypes.AuthorizationCode,
                     Permissions.GrantTypes.RefreshToken,
                     Permissions.GrantTypes.Password,
 
-                    Permissions.Prefixes.Scope + "test_scope",
+                    Permissions.Prefixes.Scope + "yarp_gateway_scope",
 
                     Permissions.ResponseTypes.Code,
                 },
@@ -61,8 +61,8 @@
 
             var scopeDescriptor = new OpenIddictScopeDescriptor
             {
-                Name = "test_scope",
-                Resources = { "test_resource" }
+                Name = "yarp_gateway_scope",
+                Resources = { "yarp_gateway" }
             };
 
             var scopeInstance = await scopeManager.FindByNameAsync(scopeDescriptor.Name, cancellationToken);
