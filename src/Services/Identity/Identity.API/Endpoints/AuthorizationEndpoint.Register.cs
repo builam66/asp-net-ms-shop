@@ -6,7 +6,7 @@
             RegisterModel registerData,
             UserManager<IdentityUser> userManager)
         {
-            if (!registerData.TryValidate(out var validationErrors))
+            if (registerData.TryValidate(out var validationErrors) == false)
             {
                 return Results.BadRequest(validationErrors);
             }
@@ -19,13 +19,18 @@
 
             user = new IdentityUser { UserName = registerData.Username, Email = registerData.Email };
             var result = await userManager.CreateAsync(user, registerData.Password);
-
-            if (result.Succeeded)
+            if (result.Succeeded == false)
             {
-                return Results.Ok();
+                return Results.BadRequest(result.Errors.Select(e => e.Description));
             }
 
-            return Results.BadRequest(result.Errors.Select(e => e.Description));
+            result = await userManager.AddToRoleAsync(user, "User");
+            if (result.Succeeded == false)
+            {
+                return Results.BadRequest(result.Errors.Select(e => e.Description));
+            }
+
+            return Results.Ok();
         }
     }
 }

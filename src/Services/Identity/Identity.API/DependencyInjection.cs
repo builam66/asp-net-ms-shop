@@ -57,6 +57,9 @@
                         .AddEphemeralEncryptionKey()
                         .AddEphemeralSigningKey();
 
+                    // Include roles in the token
+                    options.RegisterClaims(ClaimTypes.Role);
+
                     // Register scopes (permissions)
                     options.RegisterScopes(Scopes.OpenId, Scopes.Profile, Scopes.OfflineAccess);
 

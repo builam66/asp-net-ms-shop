@@ -8,6 +8,7 @@
 
             await PopulateScopesAsync(serviceScope, cancellationToken);
             await PopulateInternalAppsAsync(serviceScope, cancellationToken);
+            await PopulateRolesAsync(serviceScope);
             await PopulateUsersAsync(serviceScope);
         }
 
@@ -81,8 +82,26 @@
         {
             var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-            var user = new IdentityUser("test_user@gmail.com");
-            await userManager.CreateAsync(user, "Pass@word1");
+            var admin = new IdentityUser { UserName = "admin", Email = "admin@gmail.com" };
+            await userManager.CreateAsync(admin, "Admin@123");
+            await userManager.AddToRoleAsync(admin, "Admin"); // Assign "Admin" role
+        }
+
+        static async ValueTask PopulateRolesAsync(IServiceScope serviceScope)
+        {
+            var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var roles = new[] { "Admin", "User" }; // List of roles to create
+
+            foreach (var role in roles)
+            {
+                // Check if the role already exists
+                var isRoleExist = await roleManager.RoleExistsAsync(role);
+                if (isRoleExist == false)
+                {
+                    // Create the role if it doesn't exist
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
         }
     }
 }

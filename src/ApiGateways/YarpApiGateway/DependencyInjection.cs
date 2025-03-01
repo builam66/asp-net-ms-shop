@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Transforms;
 using YarpApiGateway.Helpers;
@@ -40,7 +41,7 @@ namespace YarpApiGateway
                         Methods = ["POST", "PUT", "DELETE"],
                     },
                     Transforms = commonTransforms,
-                    AuthorizationPolicy = "Authenticated",
+                    AuthorizationPolicy = "AdminPolicy",
                 },
                 new RouteConfig
                 {
@@ -51,7 +52,7 @@ namespace YarpApiGateway
                         Path = "/basket-service/{**catch-all}"
                     },
                     Transforms = commonTransforms,
-                    AuthorizationPolicy = "Authenticated",
+                    AuthorizationPolicy = "UserPolicy",
                 },
                 new RouteConfig
                 {
@@ -62,7 +63,7 @@ namespace YarpApiGateway
                         Path = "/ordering-service/{**catch-all}"
                     },
                     Transforms = commonTransforms,
-                    AuthorizationPolicy = "Authenticated",
+                    AuthorizationPolicy = "UserPolicy",
                 },
                 new RouteConfig
                 {
@@ -160,17 +161,10 @@ namespace YarpApiGateway
                     });
                 });
 
-            services
-                .AddAuthorizationBuilder()
-                .AddPolicy("Authenticated", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                });
-
             return services;
         }
 
-        public static IServiceCollection AddIdentityServiceAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection services, IConfiguration configuration)
         {
             services
                 .AddAuthentication(options =>
@@ -188,9 +182,28 @@ namespace YarpApiGateway
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true
+                        ValidateIssuerSigningKey = true,
+                        // Map the "role" claim from the JWT
+                        RoleClaimType = ClaimTypes.Role,
                     };
                 });
+
+            services
+                .AddAuthorizationBuilder()
+                .AddPolicy("AdminPolicy", policy =>
+                {
+                    policy
+                        .RequireAuthenticatedUser()
+                        .RequireRole("Admin"); // Requires "Admin" role
+                    //policy.RequireClaim("groups", "Admin"); // If roles are stored in a different claim
+                })
+                .AddPolicy("UserPolicy", policy =>
+                {
+                    policy
+                        .RequireAuthenticatedUser()
+                        .RequireRole("User"); // Requires "User" role
+                });
+
             return services;
         }
     }

@@ -8,8 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 //    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 builder.Services.AddYarpReverseProxy(builder.Configuration);
 
-builder.Services.AddIdentityServiceAuthentication(builder.Configuration);
-builder.Services.AddAuthorization();
+builder.Services.AddAuthenticationAndAuthorization(builder.Configuration);
 
 builder.Services.AddRateLimiter(rateLimiterOptions =>
 {
