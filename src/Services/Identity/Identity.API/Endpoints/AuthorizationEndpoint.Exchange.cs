@@ -116,7 +116,7 @@
                 .SetClaim(Claims.Subject, user.Id)
                 .SetClaim(Claims.Email, user.Email)
                 .SetClaim(Claims.Name, user.UserName)
-                .SetClaim(Claims.Audience, "Resourse");
+                .SetClaim(Claims.Audience, "yarp_gateway_resource");
 
             var userRoles = await userManager.GetRolesAsync(user);
             identity.SetClaims(Claims.Role, [..userRoles]);
@@ -244,7 +244,7 @@
                 .SetClaim(Claims.Subject, user.Id)
                 .SetClaim(Claims.Email, user.Email)
                 .SetClaim(Claims.Name, user.UserName)
-                .SetClaim(Claims.Audience, "Resourse");
+                .SetClaim(Claims.Audience, "yarp_gateway_resource");
 
             var userRoles = await userManager.GetRolesAsync(user);
             identity.SetClaims(Claims.Role, [.. userRoles]);

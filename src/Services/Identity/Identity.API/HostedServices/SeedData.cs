@@ -27,6 +27,7 @@
                 //RedirectUris = { new Uri("https://localhost:5055/callback") },
                 //RedirectUris = { new Uri("https://oauth.pstmn.io/v1/callback") },
                 ClientType = ClientTypes.Confidential,
+                ConsentType = ConsentTypes.Implicit,
                 Permissions =
                 {
                     Permissions.Endpoints.Token,

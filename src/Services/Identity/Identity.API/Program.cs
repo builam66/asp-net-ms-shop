@@ -14,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenIddictService(builder.Configuration);
 
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
 builder.Services.AddHttpClient("TokenApiClient", client =>
 {
     client.BaseAddress = new Uri("https://localhost:5055/");
@@ -38,7 +41,7 @@ if (app.Environment.IsDevelopment())
 //app.UseSession();
 
 app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapCarter();
 

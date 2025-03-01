@@ -1,4 +1,9 @@
-﻿using Yarp.ReverseProxy.Configuration;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Net.Http.Headers;
+using Yarp.ReverseProxy.Configuration;
+using Yarp.ReverseProxy.Transforms;
 using YarpApiGateway.Helpers;
 
 namespace YarpApiGateway
@@ -16,33 +21,48 @@ namespace YarpApiGateway
             {
                 new RouteConfig
                 {
-                    RouteId = "catalog-route",
+                    RouteId = "catalog-public-route",
                     ClusterId = "catalog-cluster",
                     Match = new RouteMatch
                     {
-                        Path = "/catalog-service/{**catch-all}"
+                        Path = "/catalog-service/{**catch-all}",
+                        Methods = ["GET"], // Apply for GET only
                     },
                     Transforms = commonTransforms,
                 },
                 new RouteConfig
                 {
-                    RouteId = "basket-route",
+                    RouteId = "catalog-admin-route",
+                    ClusterId = "catalog-cluster",
+                    Match = new RouteMatch
+                    {
+                        Path = "/catalog-service/{**catch-all}",
+                        Methods = ["POST", "PUT", "DELETE"],
+                    },
+                    Transforms = commonTransforms,
+                    AuthorizationPolicy = "Authenticated",
+                },
+                new RouteConfig
+                {
+                    RouteId = "basket-user-route",
                     ClusterId = "basket-cluster",
                     Match = new RouteMatch
                     {
                         Path = "/basket-service/{**catch-all}"
                     },
                     Transforms = commonTransforms,
+                    AuthorizationPolicy = "Authenticated",
                 },
                 new RouteConfig
                 {
-                    RouteId = "ordering-route",
+                    RouteId = "ordering-user-route",
                     ClusterId = "ordering-cluster",
                     Match = new RouteMatch
                     {
                         Path = "/ordering-service/{**catch-all}"
                     },
                     Transforms = commonTransforms,
+                    AuthorizationPolicy = "Authenticated",
                 },
                 new RouteConfig
                 {
@@ -126,8 +146,51 @@ namespace YarpApiGateway
             services
                 .AddReverseProxy()
                 .LoadFromMemory(routes, clusters)
-                .AddTransforms<ModifyBodyTransformProvider>();
+                .AddTransforms<ModifyBodyTransformProvider>()
+                .AddTransforms(builderContext =>
+                {
+                    // Pass the token from the gateway to the downstream services
+                    builderContext.AddRequestTransform(async transformContext =>
+                    {
+                        var accessToken = await transformContext.HttpContext.GetTokenAsync("access_token");
+                        if (string.IsNullOrEmpty(accessToken) == false)
+                        {
+                            transformContext.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                        }
+                    });
+                });
 
+            services
+                .AddAuthorizationBuilder()
+                .AddPolicy("Authenticated", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                });
+
+            return services;
+        }
+
+        public static IServiceCollection AddIdentityServiceAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = configuration["ClustersAddress:IdentityCluster"]; // Identity server URL
+                    options.Audience = "yarp_gateway_resource"; // Must match the audience in Identity server
+                    options.RequireHttpsMetadata = false; // Using HTTP
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true
+                    };
+                });
             return services;
         }
     }
