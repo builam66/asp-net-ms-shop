@@ -115,8 +115,10 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings__Database=Server=catalogdb;Port=5432;Database=CatalogDb;User Id=postgres;Password=postgres;Include Error Detail=true
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - catalogdb
+      - elasticsearch
     ports:
       - "6000:8080"
       - "6060:8081"
@@ -137,11 +139,13 @@ services:
       - MessageBroker__Host=amqp://ecommerce-mq:5672
       - MessageBroker__Username=guest
       - MessageBroker__Password=guest
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - basketdb
       - distributedcache
       - discount.grpc
       - messagebroker
+      - elasticsearch
     ports:
       - "6001:8080"
       - "6061:8081"
@@ -157,6 +161,9 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings__Database=Data Source=discountdb
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
     ports:
       - "6002:8080"
       - "6062:8081"
@@ -176,9 +183,11 @@ services:
       - MessageBroker__Username=guest
       - MessageBroker__Password=guest
       - FeatureManagement__OrderFullfilment=false
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - orderdb
       - messagebroker
+      - elasticsearch
     ports:
       - "6003:8080"
       - "6063:8081"
@@ -193,10 +202,12 @@ services:
       - ASPNETCORE_HTTPS_PORTS=8081
       - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - catalog.api
       - basket.api
       - ordering.api
+      - elasticsearch
     ports:
       - "6004:8080"
       - "6064:8081"
@@ -231,8 +242,10 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings__Database=Server=identitydb;Port=5432;Database=IdentityDb;User Id=postgres;Password=postgres;Include Error Detail=true
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - identitydb
+      - elasticsearch
     ports:
       - "6006:8080"
       - "6066:8081"
