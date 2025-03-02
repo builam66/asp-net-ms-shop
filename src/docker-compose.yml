@@ -18,6 +18,15 @@ services:
   identitydb:
     image: postgres
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.2
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.2
+
+  elasticsearch.setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.2
+
   catalog.api:
     image: ${DOCKER_REGISTRY?error}/catalogapi:latest
     build:
@@ -64,4 +73,4 @@ volumes:
   postgres_catalog:
   postgres_basket:
   postgres_identity:
-
+  elasticsearch-data:

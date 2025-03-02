@@ -1,7 +1,11 @@
+using Common.Logging;
 using Microsoft.AspNetCore.RateLimiting;
+using Serilog;
 using YarpApiGateway;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog(SeriLogger.Configure);
 
 // Services
 //builder.Services.AddReverseProxy()

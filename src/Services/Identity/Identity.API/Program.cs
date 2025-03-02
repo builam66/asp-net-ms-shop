@@ -1,6 +1,10 @@
+using Common.Logging;
 using Identity.API;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog(SeriLogger.Configure);
 
 // Services
 // Transfer of consent information between the authorization endpoint and the consent page

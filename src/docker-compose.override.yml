@@ -62,6 +62,51 @@ services:
     volumes:
       - postgres_identity:/var/lib/postgresql/data/
 
+  elasticsearch:
+    container_name: elasticsearch
+    environment:
+      # - xpack.monitoring.enabled=true
+      - xpack.watcher.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node # Only for dev
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=elastic
+      - KIBANA_PASSWORD=kibana
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    # healthcheck:
+    #   test: ["CMD", "curl", "-u", "elastic:elastic", "-f", "http://elasticsearch:9200"]
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 5
+
+  kibana:
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system # kibana_system for kibana built-in
+      - ELASTICSEARCH_PASSWORD=kinaba
+    depends_on:
+      - elasticsearch
+      - elasticsearch.setup
+    ports:
+      - "5601:5601" 
+
+  elasticsearch.setup:
+    container_name: elasticsearch.setup
+    depends_on:
+      - elasticsearch
+    entrypoint: >
+      sh -c "until curl -u elastic:elastic -s http://elasticsearch:9200; do echo 'Waiting for ES...'; sleep 5; done;
+             echo 'Reset kibana_system password... 1';
+             echo 'Reset kibana_system password... 2';
+             curl -u elastic:elastic -X POST http://elasticsearch:9200/_security/user/kibana_system/_password -H 'Content-Type: application/json' -d '{\"password\": \"kinaba\"}';
+             echo 'Reset kibana_system password completed';"
+    restart: "no"
+    # curl -u elastic:elastic -X POST http://elasticsearch:9200/_security/user/kinaba -H 'Content-Type: application/json' -d '{"password": "kinaba", "roles": ["kibana_admin"]}';
+
   catalog.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -167,8 +212,10 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=aspnetapp
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ApiSettings__APIGateway=http://yarpapigateway:8080
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - yarpapigateway
+      - elasticsearch
     ports:
       - "6005:8080"
       - "6065:8081"
