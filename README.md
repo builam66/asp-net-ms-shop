@@ -121,14 +121,20 @@ git clone https://github.com/builam66/asp-net-ms-shop.git
 cd builam66-asp-net-ms-shop
 ```
 
-### 2. Build and Run with Docker
+### 2. Set a docker registry (optional)
+If you don't have a docker registry, you can use the default one from Docker Hub. If you have a private registry, set the environment variable:
+```
+export DOCKER_REGISTRY=<your-docker-registry>
+```
+
+### 3. Build and Run with Docker
 
 To start all the services, use Docker Compose:
 ```
 docker-compose up --build
 ```
 
-### 3. Access the Services
+### 4. Access the Services
 - Basket API: `http://localhost:5001`
 - Catalog API: `http://localhost:5002`
 - Discount gRPC: `http://localhost:5003`
