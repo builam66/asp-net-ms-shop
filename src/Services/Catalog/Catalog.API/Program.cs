@@ -1,3 +1,6 @@
+using BuildingBlocks.Extensions;
+using Catalog.Application.Products.Commands.CreateProduct;
+using Catalog.Infrastructure;
 using Common.Logging;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -7,38 +10,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog(SeriLogger.Configure);
 
-// Add services
-var assembly = typeof(Program).Assembly;
+// Add services using standardized extensions
+var catalogAssembly = typeof(CreateProductCommand).Assembly;
+builder.Services.AddCommonServices(catalogAssembly);
 
-builder.Services.AddMediatR(config =>
-{
-    config.RegisterServicesFromAssemblies(assembly);
-    config.AddOpenBehavior(typeof(ValidationBehavior<,>));
-    config.AddOpenBehavior(typeof(LoggingBehavior<,>));
-});
-
-builder.Services.AddValidatorsFromAssembly(assembly);
-
+// Add Carter for endpoints
 builder.Services.AddCarter();
 
-builder.Services.AddMarten(opts =>
-{
-    opts.Connection(builder.Configuration.GetConnectionString("Database")!);
-}).UseLightweightSessions();
+// Add Infrastructure services
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.InitializeMartenWith<CatalogInitialData>();
-}
-
-builder.Services.AddExceptionHandler<CustomExceptionHandler>();
-
-builder.Services.AddHealthChecks()
-    .AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
+// Add standardized health checks
+var connectionString = builder.Configuration.GetConnectionString("Database")!;
+builder.Services.AddHealthChecks(connectionString, "catalog");
 
 var app = builder.Build();
 
-// Configure HTTP request
+// Configure HTTP request pipeline
 app.MapCarter();
 
 app.UseExceptionHandler(options => { });
